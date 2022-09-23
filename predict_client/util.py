@@ -71,26 +71,7 @@ def predict_response_to_dict(predict_response):
 
 
 def make_tensor_proto(data, dtype):
-    tensor_proto = TensorProto()
-
-    if type(dtype) is str:
-        dtype = dtype_to_number[dtype]
-
-    dim = [{'size': 1}]
-    values = [data]
-
-    if hasattr(data, 'shape'):
-        dim = [{'size': dim} for dim in data.shape]
-        values = list(data.reshape(-1))
-
-    tensor_proto_dict = {
-        'dtype': dtype,
-        'tensor_shape': {
-            'dim': dim
-        },
-        number_to_dtype_value[dtype]: values
-    }
-
-    dict_to_protobuf(tensor_proto_dict, tensor_proto)
+    tensor_proto = TensorProto(dtype=dtype_to_number[dtype], tensor_shape={"dim": [{"size": dim} for dim in data.shape]})  # Float32
+    setattr(tensor_proto, "tensor_content", data.tobytes())
 
     return tensor_proto
